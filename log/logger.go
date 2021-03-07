@@ -4,12 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
-	"strings"
 )
-
-// DefaultLogger for quick start
-var DefaultLogger *Logger
 
 // Logger ...
 type Logger struct {
@@ -28,7 +23,7 @@ func (l *Logger) Verbose(ctx context.Context, msg interface{}) {
 	l.Write(ctx, LevelVerbose, msg, nil)
 }
 
-// Important writes message with important level
+// Important writes a message with important level
 func (l *Logger) Important(ctx context.Context, msg interface{}) {
 	l.Write(ctx, LevelImportant, msg, nil)
 }
@@ -58,7 +53,7 @@ func (l *Logger) Writef(ctx context.Context, level Level, msg string, values ...
 	l.Write(ctx, level, fmt.Sprintf(msg, values...), nil)
 }
 
-// Write writes a message with given level and exra
+// Write writes a message with given level and extra
 func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra Extra) {
 	if msg == nil {
 		return
@@ -90,22 +85,4 @@ func (l *Logger) PreHook(h Hook) {
 // PostHook registers given hook in logger to be executed after log event was written to output
 func (l *Logger) PostHook(h Hook) {
 	l.postHooks = append(l.postHooks, h)
-}
-
-func init() {
-	lvlEnv := strings.ToLower(os.Getenv("LOG_LEVEL"))
-	var lvl Level
-
-	switch lvlEnv {
-	case "critical", "important", "fatal", "error", "warning", "err", "warn":
-		lvl = LevelImportant
-	default:
-		lvl = LevelVerbose
-	}
-
-	DefaultLogger = &Logger{
-		Level:     lvl,
-		Output:    os.Stderr,
-		Formatter: &JSONFormatter{},
-	}
 }

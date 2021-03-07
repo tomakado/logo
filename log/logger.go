@@ -59,7 +59,7 @@ func (l *Logger) Writef(ctx context.Context, level Level, msg string, values ...
 
 // Write writes a message with given level and exra
 func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra interface{}) {
-	if l.Level == LevelImportant && level == LevelVerbose {
+	if l.Level.IsHigherThan(level) {
 		return
 	}
 

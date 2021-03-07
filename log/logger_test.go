@@ -3,11 +3,11 @@ package log_test
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
+	"text/template"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tomakado/logo/log"
@@ -28,23 +28,26 @@ func TestLogger_Write(t *testing.T) {
 	})
 
 	t.Run("message logged", func(t *testing.T) {
+		tmpl, err := template.New("test_message_logged").Parse("{{.Level}} {{.Message}} {{.Extra}}")
+		assert.NoError(t, err)
+
+		formatter := log.NewTemplateFormatter(tmpl)
+
 		var buf bytes.Buffer
 		logger := &log.Logger{
 			Level:     log.LevelVerbose,
 			Output:    &buf,
-			Formatter: &log.JSONFormatter{},
+			Formatter: formatter,
 		}
 
 		msg := "hello"
 		extra := map[string]interface{}{"foo": "bar"}
 
 		event := log.NewEvent(log.LevelVerbose, msg, extra)
-		m, err := json.Marshal(event)
-		assert.NoError(t, err)
+		m := formatter.Format(event)
 
 		logger.Write(context.Background(), log.LevelVerbose, msg, extra)
 
-		// TODO Deal with diffrent time length effect
 		assert.Equal(t, len(string(m))+1, len(buf.String()))
 	})
 

@@ -35,8 +35,8 @@ type TemplateFormatter struct {
 	tmpl *template.Template
 }
 
-// NewTextFormatter creates a new instance of TemplateFormatter with given template
-func NewTextFormatter(tmpl *template.Template) *TemplateFormatter {
+// NewTemplateFormatter creates a new instance of TemplateFormatter with given template
+func NewTemplateFormatter(tmpl *template.Template) *TemplateFormatter {
 	return &TemplateFormatter{
 		tmpl: tmpl,
 	}
@@ -72,7 +72,7 @@ func NewTableTextFormatter() *TemplateFormatter {
 		panic(err)
 	}
 
-	return NewTextFormatter(tmpl)
+	return NewTemplateFormatter(tmpl)
 }
 
 // NewSimpleTextFormatter create TemplateFormatter with simple text layout
@@ -82,5 +82,5 @@ func NewSimpleTextFormatter() *TemplateFormatter {
 		panic(err)
 	}
 
-	return NewTextFormatter(tmpl)
+	return NewTemplateFormatter(tmpl)
 }

@@ -42,7 +42,7 @@ func TestTemplateFormatter(t *testing.T) {
 		tmpl, err := template.New("test_empty_message").Parse("")
 		assert.NoError(t, err)
 
-		formatter := log.NewTextFormatter(tmpl)
+		formatter := log.NewTemplateFormatter(tmpl)
 
 		event := log.NewEvent(log.LevelVerbose, nil, map[string]interface{}{"foo": "bar"})
 
@@ -53,7 +53,7 @@ func TestTemplateFormatter(t *testing.T) {
 		tmpl, err := template.New("test_usual_case").Parse("{{.Level}} {{.Time}} {{.Message}} {{.Extra}}")
 		assert.NoError(t, err)
 
-		formatter := log.NewTextFormatter(tmpl)
+		formatter := log.NewTemplateFormatter(tmpl)
 
 		eventTime := time.Now()
 		event := log.Event{

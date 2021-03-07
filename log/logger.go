@@ -63,6 +63,10 @@ func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra 
 		return
 	}
 
+	if msg == nil {
+		return
+	}
+
 	event := NewEvent(level, msg, extra)
 	formattedEvent := l.Formatter.Format(event) + "\n"
 

@@ -44,6 +44,7 @@ func TestLogger_Write(t *testing.T) {
 
 		logger.Write(context.Background(), log.LevelVerbose, msg, extra)
 
+		// TODO Deal with diffrent time length effect
 		assert.Equal(t, len(string(m))+1, len(buf.String()))
 	})
 
@@ -85,10 +86,43 @@ func TestLogger_Writef(t *testing.T) {
 		Formatter: &log.JSONFormatter{},
 	}
 
-	msgFmt := "Hello, %s"
-	val := "Jon Snow"
+	const (
+		msgFmt = "Hello, %s"
+		val    = "Jon Snow"
+	)
 
 	logger.Writef(context.Background(), log.LevelVerbose, msgFmt, val)
 
 	assert.True(t, strings.Contains(buf.String(), fmt.Sprintf(msgFmt, val)))
+}
+
+func TestLogger_Verbose(t *testing.T) {
+	t.Run("usual case", func(t *testing.T) {
+		var loggedEvent log.Event
+		logger := &log.Logger{
+			Output:    ioutil.Discard,
+			Formatter: &log.JSONFormatter{},
+		}
+		logger.Hook(func(_ context.Context, e log.Event) {
+			loggedEvent = e
+		})
+
+		const msg = "hello"
+
+		logger.Verbose(context.Background(), msg)
+		assert.Equal(t, log.LevelVerbose, loggedEvent.Level)
+		assert.Equal(t, loggedEvent.Message, msg)
+	})
+
+	t.Run("too low logging level", func(t *testing.T) {
+		var buf bytes.Buffer
+		logger := &log.Logger{
+			Output:    &buf,
+			Level:     log.LevelImportant,
+			Formatter: &log.JSONFormatter{},
+		}
+
+		logger.Verbose(context.Background(), "hello")
+		assert.Equal(t, 0, len(buf.String()))
+	})
 }

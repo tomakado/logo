@@ -23,7 +23,6 @@ func TestLogger_Write(t *testing.T) {
 		}
 
 		logger.Write(context.Background(), log.LevelVerbose, "hello", nil)
-
 		assert.Equal(t, 0, buf.Len())
 	})
 
@@ -47,7 +46,6 @@ func TestLogger_Write(t *testing.T) {
 		m := formatter.Format(event)
 
 		logger.Write(context.Background(), log.LevelVerbose, msg, extra)
-
 		assert.Equal(t, len(string(m))+1, len(buf.String()))
 	})
 
@@ -64,7 +62,6 @@ func TestLogger_Write(t *testing.T) {
 		})
 
 		logger.Write(context.Background(), log.LevelVerbose, "hello", nil)
-
 		assert.True(t, hookCalled)
 	})
 
@@ -77,7 +74,6 @@ func TestLogger_Write(t *testing.T) {
 		}
 
 		logger.Write(context.Background(), log.LevelVerbose, nil, nil)
-
 		assert.Equal(t, 0, len(buf.String()))
 	})
 }
@@ -95,7 +91,6 @@ func TestLogger_Writef(t *testing.T) {
 	)
 
 	logger.Writef(context.Background(), log.LevelVerbose, msgFmt, val)
-
 	assert.True(t, strings.Contains(buf.String(), fmt.Sprintf(msgFmt, val)))
 }
 
@@ -114,7 +109,7 @@ func TestLogger_Verbose(t *testing.T) {
 
 		logger.Verbose(context.Background(), msg)
 		assert.Equal(t, log.LevelVerbose, loggedEvent.Level)
-		assert.Equal(t, loggedEvent.Message, msg)
+		assert.Equal(t, msg, loggedEvent.Message)
 	})
 
 	t.Run("too low logging level", func(t *testing.T) {
@@ -128,4 +123,102 @@ func TestLogger_Verbose(t *testing.T) {
 		logger.Verbose(context.Background(), "hello")
 		assert.Equal(t, 0, len(buf.String()))
 	})
+}
+
+func TestLogger_Important(t *testing.T) {
+	var loggedEvent log.Event
+	logger := &log.Logger{
+		Level:     log.LevelImportant,
+		Output:    ioutil.Discard,
+		Formatter: &log.JSONFormatter{},
+	}
+	logger.Hook(func(_ context.Context, e log.Event) {
+		loggedEvent = e
+	})
+
+	const msg = "hello"
+
+	logger.Important(context.Background(), msg)
+	assert.Equal(t, log.LevelImportant, loggedEvent.Level)
+	assert.Equal(t, msg, loggedEvent.Message)
+}
+
+func TestLogger_VerboseX(t *testing.T) {
+	var loggedEvent log.Event
+	logger := &log.Logger{
+		Output:    ioutil.Discard,
+		Formatter: &log.JSONFormatter{},
+	}
+	logger.Hook(func(_ context.Context, e log.Event) {
+		loggedEvent = e
+	})
+
+	const msg = "hello"
+	extra := map[string]string{"foo": "bar"}
+
+	logger.VerboseX(context.Background(), msg, extra)
+	assert.Equal(t, log.LevelVerbose, loggedEvent.Level)
+	assert.Equal(t, msg, loggedEvent.Message)
+	assert.Equal(t, extra, loggedEvent.Extra)
+}
+
+func TestLogger_ImportantX(t *testing.T) {
+	var loggedEvent log.Event
+	logger := &log.Logger{
+		Level:     log.LevelImportant,
+		Output:    ioutil.Discard,
+		Formatter: &log.JSONFormatter{},
+	}
+	logger.Hook(func(_ context.Context, e log.Event) {
+		loggedEvent = e
+	})
+
+	const msg = "hello"
+	extra := map[string]string{"foo": "bar"}
+
+	logger.ImportantX(context.Background(), msg, extra)
+	assert.Equal(t, log.LevelImportant, loggedEvent.Level)
+	assert.Equal(t, msg, loggedEvent.Message)
+	assert.Equal(t, extra, loggedEvent.Extra)
+}
+
+func TestLogger_Verbosef(t *testing.T) {
+	var loggedEvent log.Event
+	logger := &log.Logger{
+		Output:    ioutil.Discard,
+		Formatter: &log.JSONFormatter{},
+	}
+	logger.Hook(func(_ context.Context, e log.Event) {
+		loggedEvent = e
+	})
+
+	const (
+		msgFmt = "Hello, %s"
+		val    = "Jon Snow"
+	)
+
+	logger.Verbosef(context.Background(), msgFmt, val)
+	assert.Equal(t, log.LevelVerbose, loggedEvent.Level)
+	assert.Equal(t, fmt.Sprintf(msgFmt, val), loggedEvent.Message)
+}
+
+func TestLogger_Importantf(t *testing.T) {
+	var loggedEvent log.Event
+	logger := &log.Logger{
+		Level:     log.LevelImportant,
+		Output:    ioutil.Discard,
+		Formatter: &log.JSONFormatter{},
+	}
+	logger.Hook(func(_ context.Context, e log.Event) {
+		loggedEvent = e
+	})
+
+	const (
+		msgFmt = "Hello, %s"
+		val    = "Jon Snow"
+	)
+
+	logger.Importantf(context.Background(), msgFmt, val)
+	assert.Equal(t, log.LevelImportant, loggedEvent.Level)
+	assert.Equal(t, fmt.Sprintf(msgFmt, val), loggedEvent.Message)
 }

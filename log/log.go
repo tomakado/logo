@@ -75,6 +75,16 @@ func Write(ctx context.Context, level Level, msg interface{}, extra Extra) {
 	DefaultLogger.Write(ctx, level, msg, extra)
 }
 
+// PreHook registers given hook in logger to be executed before log event was written to output
+func PreHook(h Hook) {
+	DefaultLogger.PreHook(h)
+}
+
+// PostHook registers given hook in  logger to be executed after log event was written to output
+func PostHook(h Hook) {
+	DefaultLogger.PostHook(h)
+}
+
 func init() {
 	lvlEnv := strings.ToLower(os.Getenv("LOG_LEVEL"))
 	var lvl Level

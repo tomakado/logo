@@ -82,7 +82,7 @@ func (l *Logger) PreHook(h Hook) {
 	l.preHooks = append(l.preHooks, h)
 }
 
-// PostHook registers given hook in logger to be executed after log event was written to output
+// PostHook registers given hook in  logger to be executed after log event was written to output
 func (l *Logger) PostHook(h Hook) {
 	l.postHooks = append(l.postHooks, h)
 }

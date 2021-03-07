@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -74,4 +76,19 @@ func TestLogger_Write(t *testing.T) {
 
 		assert.Equal(t, 0, len(buf.String()))
 	})
+}
+
+func TestLogger_Writef(t *testing.T) {
+	var buf bytes.Buffer
+	logger := &log.Logger{
+		Output:    &buf,
+		Formatter: &log.JSONFormatter{},
+	}
+
+	msgFmt := "Hello, %s"
+	val := "Jon Snow"
+
+	logger.Writef(context.Background(), log.LevelVerbose, msgFmt, val)
+
+	assert.True(t, strings.Contains(buf.String(), fmt.Sprintf(msgFmt, val)))
 }

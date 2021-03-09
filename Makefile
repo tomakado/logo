@@ -11,3 +11,6 @@ test-cover-html:
 
 doc:
 	godoc -http=:6060
+
+lint:
+	golangci-lint run ./...

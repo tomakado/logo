@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/tomakado/logo/log"
 )
 
@@ -64,7 +63,7 @@ func TestTemplateFormatter(t *testing.T) {
 		}
 
 		var rendered strings.Builder
-		tmpl.Execute(&rendered, event)
+		assert.NoError(t, tmpl.Execute(&rendered, event))
 
 		assert.Equal(t, rendered.String(), formatter.Format(event))
 	})

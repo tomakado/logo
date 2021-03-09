@@ -86,7 +86,9 @@ func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra 
 
 	formattedEvent := l.formatter.Format(event) + "\n"
 
-	l.output.Write([]byte(formattedEvent))
+	if _, err := l.output.Write([]byte(formattedEvent)); err != nil {
+		panic(err)
+	}
 
 	for _, h := range l.postHooks {
 		h(ctx, &event)

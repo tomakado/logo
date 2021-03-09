@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-// Formatters for quick start
+// Formatters for quick start.
 var (
 	SimpleTextFormatter *TemplateFormatter
 	TableTextFormatter  *TemplateFormatter
 )
 
-// Formatter converts given event to string
+// Formatter converts given event to string.
 type Formatter interface {
 	Format(event Event) string
 }
 
-// JSONFormatter is used to output logs as JSON string
+// JSONFormatter is used to output logs as JSON string.
 type JSONFormatter struct{}
 
-// Format converts given event to JSON string
+// Format converts given event to JSON string.
 func (f JSONFormatter) Format(event Event) string {
 	if event.Message == nil {
 		return ""
@@ -36,19 +36,19 @@ func (f JSONFormatter) Format(event Event) string {
 	return string(bytes)
 }
 
-// TemplateFormatter is used to output logs rendered with template
+// TemplateFormatter is used to output logs rendered with template.
 type TemplateFormatter struct {
 	tmpl *template.Template
 }
 
-// NewTemplateFormatter creates a new instance of TemplateFormatter with given template
+// NewTemplateFormatter creates a new instance of TemplateFormatter with given template.
 func NewTemplateFormatter(tmpl *template.Template) *TemplateFormatter {
 	return &TemplateFormatter{
 		tmpl: tmpl,
 	}
 }
 
-// Format renders event to string with template
+// Format renders event to string with template.
 func (f TemplateFormatter) Format(event Event) string {
 	if event.Message == nil {
 		return ""
@@ -62,7 +62,7 @@ func (f TemplateFormatter) Format(event Event) string {
 	return builder.String()
 }
 
-// createSimpleTextFormatter create TemplateFormatter with simple text layout
+// createSimpleTextFormatter create TemplateFormatter with simple text layout.
 func createSimpleTextFormatter() {
 	tmpl, err := template.New("simplefmt").Parse("{{.Level}} @ {{.Time}}: {{.Message}}{{if .Extra}}; {{.Extra}}{{end}}")
 	if err != nil {
@@ -72,7 +72,7 @@ func createSimpleTextFormatter() {
 	SimpleTextFormatter = NewTemplateFormatter(tmpl)
 }
 
-// createTableTextFormatter creates TemplateFormatter with table-style template
+// createTableTextFormatter creates TemplateFormatter with table-style template.
 func createTableTextFormatter() {
 	tmpl, err := template.New("tablefmt").
 		Funcs(template.FuncMap{

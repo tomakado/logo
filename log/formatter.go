@@ -64,7 +64,7 @@ func (f TemplateFormatter) Format(event Event) string {
 
 // createSimpleTextFormatter create TemplateFormatter with simple text layout
 func createSimpleTextFormatter() {
-	tmpl, err := template.New("simplefmt").Parse("{{ .Level}} @ {{.Time}}: {{.Message}}{{if .Extra}}; {{.Extra}}")
+	tmpl, err := template.New("simplefmt").Parse("{{.Level}} @ {{.Time}}: {{.Message}}{{if .Extra}}; {{.Extra}}{{end}}")
 	if err != nil {
 		panic(err)
 	}

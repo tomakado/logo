@@ -2,7 +2,7 @@
 
 Opinionated and minimalistic logging library for Go.
 
-Library provides only two levels out of box - *Verbose* and *Important.* Why so? It's mostly inspired by 🇷🇺 [this post](https://t.me/nikitonsky_pub/47) by @tonsky and my personal experience.
+Library provides only two levels out of box - *Verbose* and *Important.* Why so? It's mostly inspired by 🇷🇺 [this post](https://t.me/nikitonsky_pub/47) by [@tonsky](https://github.com/tonsky) and my personal experience.
 
 TLDR:
 - Only two logging levels: verbose and important.
@@ -78,7 +78,7 @@ logo's logging level is a pair of numeric value and string representation of lev
 ```golang
 var (
     LevelVerbose   Level = NewLevel(10, "VERBOSE")
-	LevelImportant Level = NewLevel(20, "IMPORTANT")
+    LevelImportant Level = NewLevel(20, "IMPORTANT")
 )
 ```
 

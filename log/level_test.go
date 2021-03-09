@@ -17,3 +17,10 @@ func TestLevel_Gte(t *testing.T) {
 	assert.True(t, log.LevelImportant.Gte(log.LevelImportant))
 	assert.False(t, log.LevelVerbose.Gte(log.LevelImportant))
 }
+
+func TestLevel_Representations(t *testing.T) {
+	level := log.NewLevel(42, "FOO")
+
+	assert.Equal(t, uint8(42), level.Uint8())
+	assert.Equal(t, "FOO", level.String())
+}

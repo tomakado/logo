@@ -4,19 +4,32 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"sync"
 )
 
 // Logger ...
 type Logger struct {
-	Level     Level
-	Output    io.Writer
-	Formatter Formatter
+	mx sync.Mutex
+
+	level     Level
+	output    io.Writer
+	formatter Formatter
+
 	preHooks  []Hook
 	postHooks []Hook
 }
 
 // Hook is a function being called before event was sent to logger ou
 type Hook func(context.Context, *Event)
+
+// NewLogger returns a new instance of Logger.
+func NewLogger(level Level, output io.Writer, formatter Formatter) *Logger {
+	return &Logger{
+		level:     level,
+		output:    output,
+		formatter: formatter,
+	}
+}
 
 // Verbose writes a message with verbose level
 func (l *Logger) Verbose(ctx context.Context, msg interface{}) {
@@ -55,6 +68,9 @@ func (l *Logger) Writef(ctx context.Context, level Level, msg string, values ...
 
 // Write writes a message with given level and extra
 func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra Extra) {
+	l.mx.Lock()
+	defer l.mx.Unlock()
+
 	if msg == nil {
 		return
 	}
@@ -64,13 +80,13 @@ func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra 
 		h(ctx, &event)
 	}
 
-	if l.Level.IsHigherThan(level) {
+	if l.level.IsHigherThan(level) {
 		return
 	}
 
-	formattedEvent := l.Formatter.Format(event) + "\n"
+	formattedEvent := l.formatter.Format(event) + "\n"
 
-	l.Output.Write([]byte(formattedEvent))
+	l.output.Write([]byte(formattedEvent))
 
 	for _, h := range l.postHooks {
 		h(ctx, &event)

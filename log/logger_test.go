@@ -16,11 +16,8 @@ import (
 func TestLogger_Write(t *testing.T) {
 	t.Run("too low logging level", func(t *testing.T) {
 		var buf bytes.Buffer
-		logger := &log.Logger{
-			Output:    &buf,
-			Level:     log.LevelImportant,
-			Formatter: &log.JSONFormatter{},
-		}
+
+		logger := log.NewLogger(log.LevelImportant, &buf, &log.JSONFormatter{})
 
 		logger.Write(context.Background(), log.LevelVerbose, "hello", nil)
 		assert.Equal(t, 0, buf.Len())
@@ -33,11 +30,7 @@ func TestLogger_Write(t *testing.T) {
 		formatter := log.NewTemplateFormatter(tmpl)
 
 		var buf bytes.Buffer
-		logger := &log.Logger{
-			Level:     log.LevelVerbose,
-			Output:    &buf,
-			Formatter: formatter,
-		}
+		logger := log.NewLogger(log.LevelVerbose, &buf, formatter)
 
 		msg := "hello"
 		extra := map[string]interface{}{"foo": "bar"}
@@ -51,11 +44,8 @@ func TestLogger_Write(t *testing.T) {
 
 	t.Run("empty message", func(t *testing.T) {
 		var buf bytes.Buffer
-		logger := &log.Logger{
-			Level:     log.LevelVerbose,
-			Output:    &buf,
-			Formatter: &log.JSONFormatter{},
-		}
+
+		logger := log.NewLogger(log.LevelVerbose, &buf, &log.JSONFormatter{})
 
 		logger.Write(context.Background(), log.LevelVerbose, nil, nil)
 		assert.Equal(t, 0, len(buf.String()))
@@ -64,10 +54,8 @@ func TestLogger_Write(t *testing.T) {
 
 func TestLogger_Writef(t *testing.T) {
 	var buf bytes.Buffer
-	logger := &log.Logger{
-		Output:    &buf,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelVerbose, &buf, &log.JSONFormatter{})
 
 	const (
 		msgFmt = "Hello, %s"
@@ -81,10 +69,8 @@ func TestLogger_Writef(t *testing.T) {
 func TestLogger_Verbose(t *testing.T) {
 	t.Run("usual case", func(t *testing.T) {
 		var loggedEvent *log.Event
-		logger := &log.Logger{
-			Output:    ioutil.Discard,
-			Formatter: &log.JSONFormatter{},
-		}
+
+		logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, &log.JSONFormatter{})
 		logger.PostHook(func(_ context.Context, e *log.Event) {
 			loggedEvent = e
 		})
@@ -98,11 +84,7 @@ func TestLogger_Verbose(t *testing.T) {
 
 	t.Run("too low logging level", func(t *testing.T) {
 		var buf bytes.Buffer
-		logger := &log.Logger{
-			Output:    &buf,
-			Level:     log.LevelImportant,
-			Formatter: &log.JSONFormatter{},
-		}
+		logger := log.NewLogger(log.LevelImportant, &buf, &log.JSONFormatter{})
 
 		logger.Verbose(context.Background(), "hello")
 		assert.Equal(t, 0, len(buf.String()))
@@ -111,11 +93,8 @@ func TestLogger_Verbose(t *testing.T) {
 
 func TestLogger_Important(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Level:     log.LevelImportant,
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelImportant, ioutil.Discard, &log.JSONFormatter{})
 	logger.PostHook(func(_ context.Context, e *log.Event) {
 		loggedEvent = e
 	})
@@ -129,10 +108,8 @@ func TestLogger_Important(t *testing.T) {
 
 func TestLogger_VerboseX(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, &log.JSONFormatter{})
 	logger.PostHook(func(_ context.Context, e *log.Event) {
 		loggedEvent = e
 	})
@@ -148,11 +125,8 @@ func TestLogger_VerboseX(t *testing.T) {
 
 func TestLogger_ImportantX(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Level:     log.LevelImportant,
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelImportant, ioutil.Discard, &log.JSONFormatter{})
 	logger.PostHook(func(_ context.Context, e *log.Event) {
 		loggedEvent = e
 	})
@@ -168,10 +142,8 @@ func TestLogger_ImportantX(t *testing.T) {
 
 func TestLogger_Verbosef(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, &log.JSONFormatter{})
 	logger.PostHook(func(_ context.Context, e *log.Event) {
 		loggedEvent = e
 	})
@@ -188,11 +160,8 @@ func TestLogger_Verbosef(t *testing.T) {
 
 func TestLogger_Importantf(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Level:     log.LevelImportant,
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelImportant, ioutil.Discard, &log.JSONFormatter{})
 	logger.PostHook(func(_ context.Context, e *log.Event) {
 		loggedEvent = e
 	})
@@ -209,10 +178,8 @@ func TestLogger_Importantf(t *testing.T) {
 
 func TestLogger_PreHook(t *testing.T) {
 	var loggedEvent *log.Event
-	logger := &log.Logger{
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+
+	logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, &log.JSONFormatter{})
 	logger.PreHook(func(_ context.Context, e *log.Event) {
 		e.Extra["foo"] = "bar"
 	})
@@ -225,11 +192,7 @@ func TestLogger_PreHook(t *testing.T) {
 }
 
 func TestLogger_PostHook(t *testing.T) {
-	logger := &log.Logger{
-		Level:     log.LevelVerbose,
-		Output:    ioutil.Discard,
-		Formatter: &log.JSONFormatter{},
-	}
+	logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, &log.JSONFormatter{})
 
 	var hookCalled bool
 	logger.PostHook(func(_ context.Context, _ *log.Event) {

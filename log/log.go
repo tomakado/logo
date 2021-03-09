@@ -29,11 +29,14 @@ package log
 import (
 	"context"
 	"os"
-	"strings"
 )
 
-// DefaultLogger for quick start
-var DefaultLogger *Logger
+// DefaultLogger is a logger for quick start
+var DefaultLogger = &Logger{
+	level:     LevelVerbose,
+	output:    os.Stderr,
+	formatter: &JSONFormatter{},
+}
 
 // Verbose writes a message with verbose level
 func Verbose(ctx context.Context, msg interface{}) {
@@ -80,25 +83,7 @@ func PreHook(h Hook) {
 	DefaultLogger.PreHook(h)
 }
 
-// PostHook registers given hook in  logger to be executed after log event was written to output
+// PostHook registers given hook in logger to be executed after log event was written to output
 func PostHook(h Hook) {
 	DefaultLogger.PostHook(h)
-}
-
-func init() {
-	lvlEnv := strings.ToLower(os.Getenv("LOG_LEVEL"))
-	var lvl Level
-
-	switch lvlEnv {
-	case "critical", "important", "fatal", "error", "warning", "err", "warn":
-		lvl = LevelImportant
-	default:
-		lvl = LevelVerbose
-	}
-
-	DefaultLogger = &Logger{
-		Level:     lvl,
-		Output:    os.Stderr,
-		Formatter: &JSONFormatter{},
-	}
 }

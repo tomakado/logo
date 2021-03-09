@@ -23,6 +23,25 @@ For quick start use package functions like this:
 		log.Write(ctx, log.LevelImportant, "hello, it's me", Extra{"a": 42})
 		log.Writef(ctx, log.LevelVerbose, "My name is %s, I'm %d y.o.", "Ildar", 23)
 	}
+
+For fine-tuned logger use NewLogger function:
+	package main
+
+	import (
+		"context"
+		"os"
+
+		"github.com/tomakado/logo/log"
+	)
+
+	func main() {
+		ctx := context.Background()
+
+		logger := log.NewLogger(log.LevelImportant, os.Stderr, log.SimpleTextFormatter)
+
+		logger.Verbose(ctx, "hello!") // will not be sent to output
+		logger.Important(ctx, "this is really important")
+	}
 */
 package log
 
@@ -32,11 +51,7 @@ import (
 )
 
 // DefaultLogger is a logger for quick start
-var DefaultLogger = &Logger{
-	level:     LevelVerbose,
-	output:    os.Stderr,
-	formatter: &JSONFormatter{},
-}
+var DefaultLogger = NewLogger(LevelVerbose, os.Stderr, &JSONFormatter{})
 
 // Verbose writes a message with verbose level
 func Verbose(ctx context.Context, msg interface{}) {

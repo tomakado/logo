@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// Formatters for quick start
+var (
+	SimpleTextFormatter *TemplateFormatter
+	TableTextFormatter  *TemplateFormatter
+)
+
 // Formatter converts given event to string
 type Formatter interface {
 	Format(event Event) string
@@ -56,8 +62,18 @@ func (f TemplateFormatter) Format(event Event) string {
 	return builder.String()
 }
 
-// NewTableTextFormatter creates TemplateFormatter with table-style template
-func NewTableTextFormatter() *TemplateFormatter {
+// createSimpleTextFormatter create TemplateFormatter with simple text layout
+func createSimpleTextFormatter() {
+	tmpl, err := template.New("simplefmt").Parse("{{ .Level}} @ {{.Time}}: {{.Message}}{{if .Extra}}; {{.Extra}}")
+	if err != nil {
+		panic(err)
+	}
+
+	SimpleTextFormatter = NewTemplateFormatter(tmpl)
+}
+
+// createTableTextFormatter creates TemplateFormatter with table-style template
+func createTableTextFormatter() {
 	tmpl, err := template.New("tablefmt").
 		Funcs(template.FuncMap{
 			"fmtTime": func(t time.Time) string {
@@ -72,15 +88,10 @@ func NewTableTextFormatter() *TemplateFormatter {
 		panic(err)
 	}
 
-	return NewTemplateFormatter(tmpl)
+	TableTextFormatter = NewTemplateFormatter(tmpl)
 }
 
-// NewSimpleTextFormatter create TemplateFormatter with simple text layout
-func NewSimpleTextFormatter() *TemplateFormatter {
-	tmpl, err := template.New("simplefmt").Parse("{{ .Level}} @ {{.Time}}: {{.Message}}{{if .Extra}}; {{.Extra}}")
-	if err != nil {
-		panic(err)
-	}
-
-	return NewTemplateFormatter(tmpl)
+func init() {
+	createSimpleTextFormatter()
+	createTableTextFormatter()
 }

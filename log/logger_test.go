@@ -75,7 +75,11 @@ func TestLogger_Verbose(t *testing.T) {
 			loggedEvent = e
 		})
 
-		const msg = "hello"
+		msg := struct {
+			Greeting string `json:"greeting"`
+		}{
+			Greeting: "hello",
+		}
 
 		logger.Verbose(context.Background(), msg)
 		assert.Equal(t, log.LevelVerbose, loggedEvent.Level)

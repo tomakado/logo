@@ -16,10 +16,16 @@ func (l Level) String() string {
 	return l.repr
 }
 
-// IsHigherThan returns true if numeric representation of level is greater than
+// Gt returns true if numeric representation of level is greater than
 // numeric representation of given other level.
-func (l Level) IsHigherThan(other Level) bool {
+func (l Level) Gt(other Level) bool {
 	return l.value > other.value
+}
+
+// Gte returns true if numeric representation of level is greater than
+// of equal to numeric representation of given other level.
+func (l Level) Gte(other Level) bool {
+	return l.value >= other.value
 }
 
 // Supported logging levels.

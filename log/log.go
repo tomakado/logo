@@ -3,7 +3,7 @@ Package log implements flexible but simple logging toolchain.
 You can use pre-instantiated logger and wrapper functions around
 it or create and customize your own.
 
-For quick start use package functions like this:
+For quick start use package-level functions like this:
 	package main
 
 	import (

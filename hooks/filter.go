@@ -6,9 +6,9 @@ import (
 	"github.com/tomakado/logo/log"
 )
 
-func Filter(h log.Hook, minLevel, maxLevel log.Level) log.Hook {
+func FilteredHook(h log.Hook, filter Filter) log.Hook {
 	return func(ctx context.Context, e *log.Event) {
-		if !levelHitsBounds(e.Level, minLevel, maxLevel) {
+		if !filter(e) {
 			return
 		}
 
@@ -16,6 +16,16 @@ func Filter(h log.Hook, minLevel, maxLevel log.Level) log.Hook {
 	}
 }
 
-func levelHitsBounds(level, minLevel, maxLevel log.Level) bool {
-	return level.Gte(minLevel) && maxLevel.Gte(level)
+type Filter func(e *log.Event) bool
+
+func LevelBoundsFilter(min, max log.Level) Filter {
+	return func(e *log.Event) bool {
+		return e.Level.Gte(min) && max.Gte(e.Level)
+	}
+}
+
+func LevelFilter(level log.Level) Filter {
+	return func(e *log.Event) bool {
+		return e.Level.Gte(level)
+	}
 }

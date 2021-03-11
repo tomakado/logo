@@ -28,7 +28,15 @@ func (f JSONFormatter) Format(event Event) string {
 		return ""
 	}
 
-	bytes, err := json.Marshal(event)
+	jsonEvent := struct {
+		Level string `json:"level"`
+		*Event
+	}{
+		Level: event.Level.String(),
+		Event: &event,
+	}
+
+	bytes, err := json.Marshal(jsonEvent)
 	if err != nil {
 		panic(err)
 	}

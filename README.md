@@ -1,6 +1,6 @@
 # logo
 
-Opinionated and minimalistic logging library for Go.
+Experimental, opinionated and minimalistic logging library for Go.
 
 Library provides only two levels out of box - *Verbose* and *Important.* Why so? It's mostly inspired by 🇷🇺 [this post](https://t.me/nikitonsky_pub/47) by [@tonsky](https://github.com/tonsky) and my personal experience.
 
@@ -25,7 +25,7 @@ it or create and customize your own.
 
 ## Quick start
 
-For quick start use package functions like this:
+For quick start use package-level functions like this:
 
 ```golang
 package main
@@ -49,7 +49,7 @@ func main() {
 }
 ```
 
-For fine-tuned logger use `NewLogger` function:
+For fine-tuned logging create custom logger with `NewLogger` function:
 
 ```golang
 package main
@@ -84,7 +84,7 @@ var (
 
 ## Message format
 
-`NewLogger` accepts `Formatter` as third argument to create logger. There are two formatter types out of box `JSONFormatter` and `TemplateFormatter` and two pre-instantiated template formatters: `SimpleTextFormatter` and `TableTextFormatter`.
+`NewLogger` accepts `Formatter` as third argument to create logger. There are two formatter types out of box: `JSONFormatter` and `TemplateFormatter` and two pre-instantiated template formatters: `SimpleTextFormatter` and `TableTextFormatter`.
 
 `TemplateFormatter` uses template engine from Go's standard library to format messages:
 
@@ -106,14 +106,37 @@ logger.Verbose(context.Background(), "hello")
 Hooks are functions called before or after log message has been sent to output. Pre-hooks are useful when you need to extend the context of event. Post-hooks can be used to send events to external services (e.g. Sentry), collect metrics, etc.
 
 ```golang
-log.PreHook(func(ctx context.Context, e *log.Event) {
-    e.Extra["request_id"] = uuid.New()
-})
+package main
 
-log.PostHook(func(ctx context.Context, e *log.Event) {
-    if e.Level >= log.LevelImportant {
-        // For example, send event to Sentry or:
-        os.Exit(1)
-    }
-})
+import (
+    "context"
+
+    "github.com/tomakado/logo/hooks"
+    "github.com/tomakado/logo/log"
+)
+
+func main() {
+    ...
+
+    log.PreHook(func(ctx context.Context, e *log.Event) {
+        e.Extra["request_id"] = uuid.New()
+    })
+
+    log.PostHook(
+        hooks.FilteredHook(
+            func(ctx context.Context, e *log.Event) {
+                // Send event to external log storage here
+            },
+            hooks.LevelBoundsFilter(log.LevelVerbose, log.LevelImportant),
+        ),
+    )
+
+    log.PostHook(hooks.ExitOnImportant) // os.Exit(1) if event level is >= log.LevelImportant
+
+    ...
+}
 ```
+
+## Contributing
+
+If you want to contribute to logo - you're welcome! Feel free to leave your issues and PRs.

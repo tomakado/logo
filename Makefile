@@ -13,4 +13,4 @@ doc:
 	godoc -http=:6060
 
 lint:
-	golangci-lint run ./...
+	golangci-lint run ./... --timeout=180s

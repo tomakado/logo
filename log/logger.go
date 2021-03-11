@@ -80,7 +80,7 @@ func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra 
 		h(ctx, &event)
 	}
 
-	if l.level.IsHigherThan(level) {
+	if l.level.Gt(level) {
 		return
 	}
 

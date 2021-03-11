@@ -29,7 +29,15 @@ func TestJSONFormatter_Format(t *testing.T) {
 			Extra:   map[string]interface{}{"foo": "bar"},
 		}
 
-		m, err := json.Marshal(event)
+		jsonEvent := struct {
+			Level string `json:"level"`
+			*log.Event
+		}{
+			Level: event.Level.String(),
+			Event: &event,
+		}
+
+		m, err := json.Marshal(jsonEvent)
 		assert.NoError(t, err)
 
 		assert.Equal(t, string(m), formatter.Format(event))

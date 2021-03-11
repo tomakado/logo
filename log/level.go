@@ -11,15 +11,26 @@ func NewLevel(value uint8, repr string) Level {
 	return Level{value, repr}
 }
 
+// String converts level to uint8 representation.
+func (l Level) Uint8() uint8 {
+	return l.value
+}
+
 // String converts level to string representation.
 func (l Level) String() string {
 	return l.repr
 }
 
-// IsHigherThan returns true if numeric representation of level is greater than
+// Gt returns true if numeric representation of level is greater than
 // numeric representation of given other level.
-func (l Level) IsHigherThan(other Level) bool {
+func (l Level) Gt(other Level) bool {
 	return l.value > other.value
+}
+
+// Gte returns true if numeric representation of level is greater than
+// of equal to numeric representation of given other level.
+func (l Level) Gte(other Level) bool {
+	return l.value >= other.value
 }
 
 // Supported logging levels.

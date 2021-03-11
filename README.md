@@ -1,13 +1,13 @@
-# logo
+# logo [![Go Reference](https://pkg.go.dev/badge/github.com/tomakado/logo.svg)](https://pkg.go.dev/github.com/tomakado/logo) [![Go Report Card](https://goreportcard.com/badge/github.com/tomakado/logo)](https://goreportcard.com/report/github.com/tomakado/logo) [![codecov](https://codecov.io/gh/tomakado/logo/branch/main/graph/badge.svg)](https://codecov.io/gh/tomakado/logo) [![Coverage Status](https://coveralls.io/repos/github/tomakado/logo/badge.svg?branch=main)](https://coveralls.io/github/tomakado/logo?branch=main) 
 
 Experimental, opinionated and minimalistic logging library for Go.
 
-Library provides only two levels out of box - *Verbose* and *Important.* Why so? It's mostly inspired by 🇷🇺 [this post](https://t.me/nikitonsky_pub/47) by [@tonsky](https://github.com/tonsky) and my personal experience.
+Library provides only two levels out of box &mdash; *Verbose* and *Important.* Why so? It's mostly inspired by 🇷🇺 [this post](https://t.me/nikitonsky_pub/47) by [@tonsky](https://github.com/tonsky) and my personal experience.
 
 TLDR:
 - Only two logging levels: verbose and important.
 - *Important* level is for errors and business-critical stuff. *Verbose* level is for development purposes.
-- Stuff like "successfully connected to host ABC", "binded port 8000", etc. are not needed even at verbose level.
+- Stuff like &ldquo;successfully connected to host ABC&rdquo;, &ldquo;binded port 8000&rdquo;, etc. are not needed even at verbose level.
 - Libraries only use important level because debug related things are interesting only for library developers.
 
 However library allows to define custom levels. But before doing it, please think carefully.
@@ -49,7 +49,7 @@ func main() {
 }
 ```
 
-For fine-tuned logging create custom logger with `NewLogger` function:
+For fine-tuned logging create custom logger with [`NewLogger`](https://pkg.go.dev/github.com/tomakado/logo/log#NewLogger) function:
 
 ```golang
 package main
@@ -73,7 +73,7 @@ func main() {
 
 ## Logging levels
 
-logo's logging level is a pair of numeric value and string representation of level and can be defined with `NewLevel` function:
+logo's logging level is a pair of numeric value and string representation of level and can be defined with [`NewLevel`](https://pkg.go.dev/github.com/tomakado/logo/log#NewLevel) function:
 
 ```golang
 var (
@@ -84,9 +84,9 @@ var (
 
 ## Message format
 
-`NewLogger` accepts `Formatter` as third argument to create logger. There are two formatter types out of box: `JSONFormatter` and `TemplateFormatter` and two pre-instantiated template formatters: `SimpleTextFormatter` and `TableTextFormatter`.
+[`NewLogger`](https://pkg.go.dev/github.com/tomakado/logo/log#NewLogger) accepts [`Formatter`](https://pkg.go.dev/github.com/tomakado/logo/log#Formatter) as third argument to create logger. There are two formatter types out of box: [`JSONFormatter`](https://pkg.go.dev/github.com/tomakado/logo/log#JSONFormatter) and [`TemplateFormatter`](https://pkg.go.dev/github.com/tomakado/logo/log#TemplateFormatter) and two pre-instantiated template formatters: [`SimpleTextFormatter`](https://pkg.go.dev/github.com/tomakado/logo/log#SimpleTextFormatter) and [`TableTextFormatter`](https://pkg.go.dev/github.com/tomakado/logo/log#TableTextFormatter).
 
-`TemplateFormatter` uses template engine from Go's standard library to format messages:
+[`TemplateFormatter`](https://pkg.go.dev/github.com/tomakado/logo/log#TemplatesFormatter) uses template engine from Go's standard library to format messages:
 
 ```golang
 tmpl, err := template.New("tmpl_fmt_example").
@@ -139,4 +139,4 @@ func main() {
 
 ## Contributing
 
-If you want to contribute to logo - you're welcome! Feel free to leave your issues and PRs.
+If you want to contribute to logo &mdash; you're welcome! Feel free to send your issues and PRs.

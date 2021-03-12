@@ -16,8 +16,10 @@ func TestJSONFormatter_Format(t *testing.T) {
 
 	t.Run("empty message", func(t *testing.T) {
 		event := log.NewEvent(log.LevelVerbose, nil, map[string]interface{}{"foo": "bar"})
+		formattedEvent, err := formatter.Format(event)
 
-		assert.Equal(t, "", formatter.Format(event))
+		assert.NoError(t, err)
+		assert.Equal(t, "", formattedEvent)
 	})
 
 	t.Run("usual case", func(t *testing.T) {
@@ -40,7 +42,10 @@ func TestJSONFormatter_Format(t *testing.T) {
 		m, err := json.Marshal(jsonEvent)
 		assert.NoError(t, err)
 
-		assert.Equal(t, string(m), formatter.Format(event))
+		formattedEvent, err := formatter.Format(event)
+		assert.NoError(t, err)
+
+		assert.Equal(t, string(m), formattedEvent)
 	})
 }
 
@@ -52,8 +57,10 @@ func TestTemplateFormatter(t *testing.T) {
 		formatter := log.NewTemplateFormatter(tmpl)
 
 		event := log.NewEvent(log.LevelVerbose, nil, map[string]interface{}{"foo": "bar"})
+		formattedEvent, err := formatter.Format(event)
 
-		assert.Equal(t, "", formatter.Format(event))
+		assert.NoError(t, err)
+		assert.Equal(t, "", formattedEvent)
 	})
 
 	t.Run("usual case", func(t *testing.T) {
@@ -73,6 +80,9 @@ func TestTemplateFormatter(t *testing.T) {
 		var rendered strings.Builder
 		assert.NoError(t, tmpl.Execute(&rendered, event))
 
-		assert.Equal(t, rendered.String(), formatter.Format(event))
+		formattedEvent, err := formatter.Format(event)
+		assert.NoError(t, err)
+
+		assert.Equal(t, rendered.String(), formattedEvent)
 	})
 }

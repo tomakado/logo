@@ -36,7 +36,8 @@ func TestLogger_Write(t *testing.T) {
 		extra := map[string]interface{}{"foo": "bar"}
 
 		event := log.NewEvent(log.LevelVerbose, msg, extra)
-		m := formatter.Format(event)
+		m, err := formatter.Format(event)
+		assert.NoError(t, err)
 
 		logger.Write(context.Background(), log.LevelVerbose, msg, extra)
 		assert.Equal(t, len(string(m))+1, len(buf.String()))

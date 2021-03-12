@@ -84,9 +84,12 @@ func (l *Logger) Write(ctx context.Context, level Level, msg interface{}, extra 
 		return
 	}
 
-	formattedEvent := l.formatter.Format(event) + "\n"
+	formattedEvent, err := l.formatter.Format(event)
+	if err != nil {
+		panic(err)
+	}
 
-	if _, err := l.output.Write([]byte(formattedEvent)); err != nil {
+	if _, err := l.output.Write([]byte(formattedEvent + "\n")); err != nil {
 		panic(err)
 	}
 

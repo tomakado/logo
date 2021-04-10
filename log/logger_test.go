@@ -3,6 +3,7 @@ package log_test
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -36,7 +37,8 @@ func TestLogger_Write(t *testing.T) {
 		extra := map[string]interface{}{"foo": "bar"}
 
 		event := log.NewEvent(log.LevelVerbose, msg, extra)
-		m := formatter.Format(event)
+		m, err := formatter.Format(event)
+		assert.NoError(t, err)
 
 		logger.Write(context.Background(), log.LevelVerbose, msg, extra)
 		assert.Equal(t, len(string(m))+1, len(buf.String()))
@@ -50,6 +52,36 @@ func TestLogger_Write(t *testing.T) {
 		logger.Write(context.Background(), log.LevelVerbose, nil, nil)
 		assert.Equal(t, 0, len(buf.String()))
 	})
+
+	t.Run("panic on formatting error", func(t *testing.T) {
+		defer func() {
+			assert.NotNil(t, recover())
+		}()
+
+		logger := log.NewLogger(log.LevelVerbose, ioutil.Discard, errorFormatter{})
+		logger.Verbose(context.Background(), "hello")
+	})
+
+	t.Run("panic on event writing error", func(t *testing.T) {
+		defer func() {
+			assert.NotNil(t, recover())
+		}()
+
+		logger := log.NewLogger(log.LevelVerbose, errorWriter{}, &log.JSONFormatter{})
+		logger.Verbose(context.Background(), "hello")
+	})
+}
+
+type errorFormatter struct{}
+
+func (f errorFormatter) Format(e log.Event) (string, error) {
+	return "", errors.New("error!")
+}
+
+type errorWriter struct{}
+
+func (w errorWriter) Write(p []byte) (int, error) {
+	return 0, errors.New("error!")
 }
 
 func TestLogger_Writef(t *testing.T) {

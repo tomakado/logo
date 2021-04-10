@@ -2,10 +2,10 @@ package log
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 	"text/template"
-	"time"
+
+	"github.com/tomakado/logo/utils"
 )
 
 // Formatters for quick start.
@@ -16,16 +16,16 @@ var (
 
 // Formatter converts given event to string.
 type Formatter interface {
-	Format(event Event) string
+	Format(event Event) (string, error)
 }
 
 // JSONFormatter is used to output logs as JSON string.
 type JSONFormatter struct{}
 
 // Format converts given event to JSON string.
-func (f JSONFormatter) Format(event Event) string {
+func (f JSONFormatter) Format(event Event) (string, error) {
 	if event.Message == nil {
-		return ""
+		return "", nil
 	}
 
 	jsonEvent := struct {
@@ -38,10 +38,10 @@ func (f JSONFormatter) Format(event Event) string {
 
 	bytes, err := json.Marshal(jsonEvent)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return string(bytes)
+	return string(bytes), nil
 }
 
 // TemplateFormatter is used to output logs rendered with template.
@@ -57,17 +57,17 @@ func NewTemplateFormatter(tmpl *template.Template) *TemplateFormatter {
 }
 
 // Format renders event to string with template.
-func (f TemplateFormatter) Format(event Event) string {
+func (f TemplateFormatter) Format(event Event) (string, error) {
 	if event.Message == nil {
-		return ""
+		return "", nil
 	}
 
 	var builder strings.Builder
 	if err := f.tmpl.Execute(&builder, event); err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return builder.String()
+	return builder.String(), nil
 }
 
 // createSimpleTextFormatter create TemplateFormatter with simple text layout.
@@ -84,14 +84,10 @@ func createSimpleTextFormatter() {
 func createTableTextFormatter() {
 	tmpl, err := template.New("tablefmt").
 		Funcs(template.FuncMap{
-			"fmtTime": func(t time.Time) string {
-				return t.Format(time.RubyDate)
-			},
-			"fmtLevel": func(level Level) string {
-				return fmt.Sprintf("%-9s", level)
-			},
+			"fmtTime":  utils.FormatTimeRuby,
+			"fmtLevel": utils.FormatLevelFixedWidth,
 		}).
-		Parse("| {{.Level|fmtLevel}} | {{.Time|fmtTime}} | {{.Message}}{{if .Extra}}; extra: {{.Extra}} {{end}}")
+		Parse("| {{.Level.String|fmtLevel}} | {{.Time|fmtTime}} | {{.Message}}{{if .Extra}}; extra: {{.Extra}} {{end}}")
 	if err != nil {
 		panic(err)
 	}
